@@ -1,4 +1,0 @@
-def lm():
-	print('lm')
-	
-	
