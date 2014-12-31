@@ -44,13 +44,3 @@ def submodel(model_formula, submodel_formula, data):
   """ % {'F': F, 'pvalue': pvalue}
   print(message)
   return F, pvalue
-
-
-if __main__ == '__main__':
-  df = data('Duncan', 'car')
-  res = lm('income~prestige', df)
-  submodel('income~prestige+education', 'income~prestige', df)
-
-
-
-
