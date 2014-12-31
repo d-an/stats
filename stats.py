@@ -34,13 +34,14 @@ def submodel(model_formula, submodel_formula, data):
   y2, X2 = patsy.dmatrices(submodel_formula, data, return_type='dataframe')
   model = sm.OLS(y1, X1).fit()
   submodel = sm.OLS(y2, X2).fit()
-  F = model.mse_resid/submodel.mse_resid
-  df1, df2 = model.df_resid, submodel.df_resid
+  F=((submodel.ssr-model.ssr)/(submodel.df_resid-model.df_resid))/model.mse_resid
+  df1, df2 = submodel.df_resid-model.df_resid, model.df_resid
   pvalue = 1-scipy.stats.f.cdf(F, df1, df2)
   message = """
-  Testing null hypothesis: model is not significantly better than submodel
+  Null hypothesis: submodel holds
   F statistic: %(F)s
+  df1, df1 = %(df1)s, %(df2)s
   p-value: %(pvalue)s
-  """ % {'F': F, 'pvalue': pvalue}
+  """ % {'F': F, 'df1': int(df1), 'df2': int(df2), 'pvalue': pvalue}
   print(message)
   return F, pvalue
