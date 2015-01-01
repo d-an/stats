@@ -1,6 +1,7 @@
 import statsmodels.api as sm
 import patsy
 import scipy
+import numpy as np
 
 def lm(formula, data):
 	"""
