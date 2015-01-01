@@ -45,3 +45,31 @@ def submodel(model_formula, submodel_formula, data):
   """ % {'F': F, 'df1': int(df1), 'df2': int(df2), 'pvalue': pvalue}
   print(message)
   return F, pvalue
+
+
+def chisq_test(observed):
+	"""
+	performs a chi squared test of independence
+	on a contingency table (NumPy array). Returns
+	the test statistic and the p-value of the test. 
+	"""
+	n, k = observed.shape
+	row = observed.sum(axis=0).reshape(1,-1)
+	col = observed.sum(axis=1).reshape(-1,1)
+	expected = np.dot(col, row)/observed.sum()
+	chi2 = ((observed-expected)**2/expected).sum()
+	pvalue = 1-scipy.stats.chi2.cdf(chi2, (n-1)*(k-1))
+	message = """
+	Performing the test of independence in	a contingency table.
+	test statistic: %(chi2)s
+	p-value: %(pvalue)s
+	""" % {'chi2': chi2, 'pvalue': pvalue}
+	print(message)
+	warning = """
+	Warning message:
+  Chi-squared approximation may be incorrect
+  """
+	if expected.min() < 5:
+		print(warning)
+	return chi2, pvalue
+	
