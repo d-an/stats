@@ -67,8 +67,8 @@ def chisq_test(observed):
 	print(message)
 	warning = """
 	Warning message:
-  Chi-squared approximation may be incorrect
-  """
+	Chi-squared approximation may be incorrect
+	"""
 	if expected.min() < 5:
 		print(warning)
 	return chi2, pvalue
