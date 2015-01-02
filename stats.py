@@ -58,13 +58,15 @@ def chisq_test(observed):
 	row = observed.sum(axis=0).reshape(1,-1)
 	col = observed.sum(axis=1).reshape(-1,1)
 	expected = np.dot(col, row)/observed.sum()
-	chi2 = ((observed-expected)**2/expected).sum()
+	#chi2, pvalue = scipy.stats.mstats.chisquare(observed.ravel(), expected.ravel(), ddof = n+k-2)
+	chi2 = (((observed-expected)**2)/expected).sum()
 	pvalue = 1-scipy.stats.chi2.cdf(chi2, (n-1)*(k-1))
 	message = """
 	Performing the test of independence in	a contingency table.
 	test statistic: %(chi2)s
+	degrees of freedom: %(df)s
 	p-value: %(pvalue)s
-	""" % {'chi2': chi2, 'pvalue': pvalue}
+	""" % {'chi2': chi2, 'df': (n-1)*(k-1), 'pvalue': pvalue}
 	print(message)
 	warning = """
 	Warning message:
@@ -73,4 +75,8 @@ def chisq_test(observed):
 	if expected.min() < 5:
 		print(warning)
 	return chi2, pvalue
-	
+
+
+# http://statsmodels.sourceforge.net/devel/examples/generated/example_wls.html
+# tady je vysvetleno, jak se daji pocitat predikcni intervaly
+# bodove odhady odhadnutelnych parametru poskytne metoda predict. 
