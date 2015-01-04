@@ -77,6 +77,27 @@ def chisq_test(observed):
 	return chi2, pvalue
 
 
-# http://statsmodels.sourceforge.net/devel/examples/generated/example_wls.html
-# tady je vysvetleno, jak se daji pocitat predikcni intervaly
-# bodove odhady odhadnutelnych parametru poskytne metoda predict. 
+def predict(L, formula, data, level=0.95, interval="prediction", model_matrix = False):
+	"""
+	L is either a model matrix or a data frame 
+	of the same structure like the data argument. 
+	formula and data describe the model.          
+	interval: "prediction" of "confidence"
+	"""
+	
+	y, X = patsy.dmatrices(formula, data, return_type='dataframe')
+	model = sm.OLS(y, X).fit()
+
+	if not model_matrix:
+		L = patsy.dmatrices(formula, L, return_type="matrix")[1] # same columns like the model matrix now
+	xtx_pinv = np.linalg.pinv(X.T.dot(X))
+	
+	if interval=="confidence":
+		se = np.array([np.sqrt(model.mse_resid*vect.dot(xtx_pinv).dot(vect.T)) for vect in L])
+	else: 
+		se = np.array([np.sqrt(model.mse_resid*(1+vect.dot(xtx_pinv).dot(vect.T))) for vect in L])
+	
+	t = scipy.stats.t.ppf((level+1)/2, model.df_resid)
+	lower = model.predict(X) - t*se
+	upper = lower + 2*t*se
+	return np.hstack([lower.reshape(-1,1), upper.reshape(-1,1)])
