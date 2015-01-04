@@ -26,19 +26,20 @@ def predict(L, formula, data, level=0.95, interval="prediction", model_matrix = 
         se = np.array([np.sqrt(model.mse_resid*(1+vect.dot(xtx_pinv).dot(vect.T))) for vect in L])
     
     t = scipy.stats.t.ppf((level+1)/2, model.df_resid)
-    lower = model.predict(X) - t*se
+    point_estimates = np.array([(vect*model.params).sum() for vect in L])
+    lower = point_estimates - t*se
     upper = lower + 2*t*se
     return np.hstack([lower.reshape(-1,1), upper.reshape(-1,1)])
 
 ##
-#plt.figure()
-#plt.plot(predictions[:,0], 'r--')
-#plt.plot(predictions[:,1], 'r--')
-#plt.plot(confidence[:,0], 'b-')
-#plt.plot(confidence[:,1], 'b-')
-#plt.plot((confidence[:,0]+confidence[:,1])/2, 'ko')
-#plt.plot((confidence[:,0]+confidence[:,1])/2, 'k-')
-#plt.show()
+plt.figure()
+plt.plot(predictions[:,0], 'r--')
+plt.plot(predictions[:,1], 'r--')
+plt.plot(confidence[:,0], 'b-')
+plt.plot(confidence[:,1], 'b-')
+plt.plot((confidence[:,0]+confidence[:,1])/2, 'ko')
+plt.plot((confidence[:,0]+confidence[:,1])/2, 'k-')
+plt.show()
 ##
 
 
